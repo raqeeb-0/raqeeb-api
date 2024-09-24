@@ -1,0 +1,12 @@
+node_modules/
+.vscode/
+
+package-lock.json
+
+.env
+
+SecurePostgresql.md
+SecuteRedis.md
+
+combined.log
+error.log
