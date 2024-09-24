@@ -1,0 +1,40 @@
+{
+  "name": "raqeeb-backend-service",
+  "version": "2.0.0",
+  "description": "API for raqeeb ERP system",
+  "exports": "./index.js",
+  "type": "module",
+  "aliases": {
+    "@lib": "./lib",
+    "@routes": "./routes",
+    "@schemas": "./schemas",
+    "@services": "./services",
+    "@middlewares": "./middlewares"
+  },
+  "scripts": {
+    "start": "node --loader esm-module-alias/loader --no-warnings index.js",
+    "dev": "clear && nodemon --loader esm-module-alias/loader --no-warnings index.js"
+  },
+  "keywords": [],
+  "author": "Raqeeb Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.17.0",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "esm-module-alias": "^2.2.1",
+    "express": "^4.19.2",
+    "express-validator": "^7.2.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.14",
+    "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prisma": "^5.17.0"
+  }
+}
