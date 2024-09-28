@@ -22,26 +22,30 @@ model User {
 }
 
 model Organization {
-  id                 String             @id @default(uuid())
-  name               String
-  phone              String
-  user               User               @relation(fields: [userId], references: [id])
-  userId             String
-  createdAt          DateTime           @default(now())
-  materialPurchases  MaterialPurchase[]
-  expensePurchases   ExpensePurchase[]
-  sales              Sale[]
-  productionOrders   ProductionOrder[]
-  customers          Customer[]
-  suppliers          Supplier[]
-  materials          Material[]
-  expenses           Expense[]
-  products           Product[]
-  staff              Staff[]
-  expenseCategories  ExpenseCategory[]
-  materialCategories MaterialCategory[]
-  productCategories  ProductCategory[]
-  billOfMaterials    BillOfMaterials[]
+  id                     String                   @id @default(uuid())
+  name                   String
+  phone                  String
+  user                   User                     @relation(fields: [userId], references: [id])
+  userId                 String
+  createdAt              DateTime                 @default(now())
+  // materialPurchases  MaterialPurchase[]
+  // expensePurchases   ExpensePurchase[]
+  sales                  Sale[]
+  productionOrders       ProductionOrder[]
+  customers              Customer[]
+  suppliers              Supplier[]
+  // materials          Material[]
+  // expenses           Expense[]
+  products               Product[]
+  staff                  Staff[]
+  // expenseCategories  ExpenseCategory[]
+  // materialCategories MaterialCategory[]
+  productCategories      ProductCategory[]
+  productBillOfMaterials ProductBillOfMaterials[]
+  invoices               Invoice[]
+  Purchase               Purchase[]
+  PurchaseItem           PurchaseItem[]
+  Category               Category[]
 
   @@unique([userId, name])
   @@map("organizations")
@@ -62,41 +66,124 @@ model Staff {
   @@map("staff")
 }
 
-enum PurchaseType {
-  Material
-  Expense
+model Invoice {
+  id             String       @id @default(uuid())
+  invoiceNumber  String       @default(cuid())
+  totalAmount    Float
+  effectiveDate  String
+  createdAt      DateTime     @default(now())
+  supplier       Supplier     @relation(fields: [supplierId], references: [id])
+  supplierId     String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  @@map("invoices")
 }
 
-model MaterialPurchase {
+model Purchase {
   id             String       @id @default(uuid())
   quantity       Float
   price          Float
-  purchaseType   PurchaseType @default(Material)
-  supplier       Supplier     @relation(fields: [supplierId], references: [id])
-  supplierId     String
-  material       Material     @relation(fields: [materialId], references: [id])
+  purchaseItem   PurchaseItem @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  @@map("purchases")
+}
+
+enum PurchaseItemTypes {
+  storable
+  service
+  consumable
+}
+
+model PurchaseItem {
+  id             String            @id @default(uuid())
+  name           String
+  type           PurchaseItemTypes
+  price          Float             @default(0.00)
+  notes          String?
+  category       Category          @relation(fields: [categoryId], references: [id])
+  categoryId     String
+  createdAt      DateTime          @default(now())
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  organizationId String
+  purchases      Purchase[]
+  inventory      Inventory?
+
+  @@unique([organizationId, name])
+  @@map("purchase_items")
+}
+
+model Inventory {
+  id         String                   @id @default(uuid())
+  materialId String                   @unique
+  quantity   Float                    @default(0.00)
+  material   PurchaseItem             @relation(fields: [materialId], references: [id])
+  products   ProductBillOfMaterials[]
+
+  @@map("inventory")
+}
+
+model ProductBillOfMaterials {
+  material       Inventory    @relation(fields: [materialId], references: [materialId])
   materialId     String
-  createdAt      DateTime     @default(now())
+  product        Product      @relation(fields: [productId], references: [id])
+  productId      String
+  quantity       Float
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
 
-  @@map("material_purchases")
+  @@id([materialId, productId])
+  @@map("product_bill_of_materials")
 }
 
-model ExpensePurchase {
-  id             String       @id @default(uuid())
-  price          Float
-  purchaseType   PurchaseType @default(Material)
-  supplier       Supplier     @relation(fields: [supplierId], references: [id])
-  supplierId     String
-  expense        Expense      @relation(fields: [expenseId], references: [id])
-  expenseId      String
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String
+model Product {
+  id                  String                   @id @default(uuid())
+  name                String
+  price               Float                    @default(0.00)
+  quantity            Float                    @default(0.00)
+  profitPercent       Float?
+  indirectCostPercent Float?
+  notes               String?
+  imagePath           String?
+  category            ProductCategory          @relation(fields: [categoryId], references: [id])
+  categoryId          String
+  createdAt           DateTime                 @default(now())
+  organization        Organization             @relation(fields: [organizationId], references: [id])
+  organizationId      String
+  sales               Sale[]
+  materials           ProductBillOfMaterials[]
+  productionOrders    ProductionOrder[]
 
-  @@map("expense_purchases")
+  @@unique([organizationId, name])
+  @@map("products")
 }
+
+// model MaterialPurchase {
+//   id             String       @id @default(uuid())
+//   quantity       Float
+//   price          Float
+//   material       Material     @relation(fields: [materialId], references: [id])
+//   materialId     String
+//   organization   Organization @relation(fields: [organizationId], references: [id])
+//   organizationId String
+
+//   @@map("material_purchases")
+// }
+
+// model ExpensePurchase {
+//   id             String       @id @default(uuid())
+//   price          Float
+//   expense        Expense      @relation(fields: [expenseId], references: [id])
+//   expenseId      String
+//   createdAt      DateTime     @default(now())
+//   organization   Organization @relation(fields: [organizationId], references: [id])
+//   organizationId String
+
+//   @@map("expense_purchases")
+// }
 
 model Sale {
   id             String       @id @default(uuid())
@@ -114,16 +201,15 @@ model Sale {
 }
 
 model Supplier {
-  id                String             @id @default(uuid())
-  name              String
-  address           String?
-  phone             String
-  accountPayable    Float              @default(0.00)
-  createdAt         DateTime           @default(now())
-  organization      Organization       @relation(fields: [organizationId], references: [id])
-  organizationId    String
-  materialPurchases MaterialPurchase[]
-  expensePurchases  ExpensePurchase[]
+  id             String       @id @default(uuid())
+  name           String
+  address        String?
+  phone          String
+  accountPayable Float        @default(0.00)
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  invoices       Invoice[]
 
   @@unique([organizationId, name])
   @@map("suppliers")
@@ -144,84 +230,73 @@ model Customer {
   @@map("customers")
 }
 
-model Material {
-  id             String             @id @default(uuid())
+// model Material {
+//   id             String             @id @default(uuid())
+//   name           String
+//   price          Float              @default(0.00)
+//   quantity       Float              @default(0.00)
+//   notes          String?
+//   category       MaterialCategory   @relation(fields: [categoryId], references: [id])
+//   categoryId     String
+//   createdAt      DateTime           @default(now())
+//   organization   Organization       @relation(fields: [organizationId], references: [id])
+//   organizationId String
+//   purchases      MaterialPurchase[]
+//   products       BillOfMaterials[]
+
+//   @@unique([organizationId, name])
+//   @@map("materials")
+// }
+
+// model MaterialCategory {
+//   id             String         @id @default(uuid())
+//   name           String
+//   createdAt      DateTime       @default(now())
+//   organization   Organization   @relation(fields: [organizationId], references: [id])
+//   organizationId String
+//   materials      Material[]
+
+//   @@unique([organizationId, name])
+//   @@map("material_categories")
+// }
+
+// model Expense {
+//   id             String            @id @default(uuid())
+//   name           String
+//   price          Float             @default(0.00)
+//   notes          String?
+//   category       ExpenseCategory   @relation(fields: [categoryId], references: [id])
+//   categoryId     String
+//   createdAt      DateTime          @default(now())
+//   organization   Organization      @relation(fields: [organizationId], references: [id])
+//   organizationId String
+//   purchases      ExpensePurchase[]
+
+//   @@unique([organizationId, name])
+//   @@map("expenses")
+// }
+
+// model ExpenseCategory {
+//   id             String       @id @default(uuid())
+//   name           String
+//   createdAt      DateTime     @default(now())
+//   organization   Organization @relation(fields: [organizationId], references: [id])
+//   organizationId String
+//   expenses       Expense[]
+
+//   @@unique([organizationId, name])
+//   @@map("expense_categories")
+// }
+model Category {
+  id             String         @id @default(uuid())
   name           String
-  price          Float              @default(0.00)
-  quantity       Float              @default(0.00)
-  notes          String?
-  category       MaterialCategory   @relation(fields: [categoryId], references: [id])
-  categoryId     String
-  createdAt      DateTime           @default(now())
-  organization   Organization       @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime       @default(now())
+  organization   Organization   @relation(fields: [organizationId], references: [id])
   organizationId String
-  purchases      MaterialPurchase[]
-  products       BillOfMaterials[]
+  purchaseItems  PurchaseItem[]
 
   @@unique([organizationId, name])
-  @@map("materials")
-}
-
-model MaterialCategory {
-  id             String       @id @default(uuid())
-  name           String
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String
-  materials      Material[]
-
-  @@unique([organizationId, name])
-  @@map("material_categories")
-}
-
-model Expense {
-  id             String            @id @default(uuid())
-  name           String
-  price          Float             @default(0.00)
-  notes          String?
-  category       ExpenseCategory   @relation(fields: [categoryId], references: [id])
-  categoryId     String
-  createdAt      DateTime          @default(now())
-  organization   Organization      @relation(fields: [organizationId], references: [id])
-  organizationId String
-  purchases      ExpensePurchase[]
-
-  @@unique([organizationId, name])
-  @@map("expenses")
-}
-
-model ExpenseCategory {
-  id             String       @id @default(uuid())
-  name           String
-  createdAt      DateTime     @default(now())
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String
-  expenses       Expense[]
-
-  @@unique([organizationId, name])
-  @@map("expense_categories")
-}
-
-model Product {
-  id                  String            @id @default(uuid())
-  name                String
-  price               Float             @default(0.00)
-  quantity            Float             @default(0.00)
-  profitPercent       Float?
-  indirectCostPercent Float?
-  notes               String?
-  imagePath           String?
-  category            ProductCategory   @relation(fields: [categoryId], references: [id])
-  categoryId          String
-  createdAt           DateTime          @default(now())
-  organization        Organization      @relation(fields: [organizationId], references: [id])
-  organizationId      String
-  sales               Sale[]
-  materials           BillOfMaterials[]
-  productionOrders    ProductionOrder[]
-
-  @@unique([organizationId, name])
-  @@map("products")
+  @@map("categories")
 }
 
 model ProductCategory {
@@ -234,19 +309,6 @@ model ProductCategory {
 
   @@unique([organizationId, name])
   @@map("product_categories")
-}
-
-model BillOfMaterials {
-  material       Material     @relation(fields: [materialId], references: [id])
-  materialId     String
-  product        Product      @relation(fields: [productId], references: [id])
-  productId      String
-  quantity       Float
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String
-
-  @@id([materialId, productId])
-  @@map("bill_of_materials")
 }
 
 enum Status {
