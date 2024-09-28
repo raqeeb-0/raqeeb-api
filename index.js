@@ -18,6 +18,9 @@ import userRoutes from '@routes/user.js';
 import organizationRoutes from '@routes/organization.js';
 import authenticationRoutes from '@routes/authentication.js';
 
+import invoiceRoutes from '@routes/invoice.js';
+import purchaseItemRoutes from '@routes/purchaseItem.js';
+import purchaseItemCategoryRoutes from '@routes/purchaseItemCategory.js';
 import expensePurchaseRoutes from '@routes/expensePurchase.js';
 import materialPurchaseRoutes from '@routes/materialPurchase.js';
 import saleRoutes from '@routes/sale.js';
@@ -71,16 +74,19 @@ appRouter.use('/organizations', organizationRoutes);
 appRouter.use('/users', userRoutes);
 
 appRouter.use('/organization', orgRouter);
-orgRouter.use('/expense-purchases', expensePurchaseRoutes);
-orgRouter.use('/material-purchases', materialPurchaseRoutes);
+orgRouter.use('/invoices', invoiceRoutes);
+orgRouter.use('/purchase-items', purchaseItemRoutes);
+orgRouter.use('/purchase-item-categories', purchaseItemCategoryRoutes);
+// orgRouter.use('/expense-purchases', expensePurchaseRoutes);
+// orgRouter.use('/material-purchases', materialPurchaseRoutes);
 orgRouter.use('/sales', saleRoutes);
 orgRouter.use('/suppliers', supplierRoutes);
 orgRouter.use('/customers', customerRoutes);
 orgRouter.use('/production-orders', productionOrderRoutes);
-orgRouter.use('/materials', materialRoutes);
-orgRouter.use('/material-categories', materialCategoryRoutes);
-orgRouter.use('/expenses', expenseRoutes);
-orgRouter.use('/expense-categories', expenseCategoryRoutes);
+// orgRouter.use('/materials', materialRoutes);
+// orgRouter.use('/material-categories', materialCategoryRoutes);
+// orgRouter.use('/expenses', expenseRoutes);
+// orgRouter.use('/expense-categories', expenseCategoryRoutes);
 orgRouter.use('/products', productRoutes);
 orgRouter.use('/product-categories', productCategoryRoutes);
 
