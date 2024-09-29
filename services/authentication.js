@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { transporter } from '@lib/mailer.js';
 import { PrismaClient } from '@prisma/client';
@@ -7,10 +6,11 @@ import { matchedData } from 'express-validator';
 import { CustomError } from '@lib/CustomError.js';
 import { capitalizeFirstLetter } from '@lib/utils.js';
 import { resetPasswordTemplate } from '@lib/templates.js';
-import { setAuthCookie } from '@middlewares/authCookieSetter.js';
 
 
 const prisma = new PrismaClient();
+const tokenExpiresIn = process.env.TOKEN_EXPIRES_IN;
+const refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN;
 
 async function signup(req, res, next) {
   const {
@@ -41,9 +41,9 @@ async function signup(req, res, next) {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.TOKEN_SECRET,
       {
-        expiresIn: 15 * 60,
+        expiresIn: tokenExpiresIn * 60,
       }
     );
 
@@ -51,9 +51,9 @@ async function signup(req, res, next) {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: 30 * 60,
+        expiresIn: refreshTokenExpiresIn * 60,
       }
     );
 
@@ -61,7 +61,7 @@ async function signup(req, res, next) {
       token,
       refreshToken,
       username: user.username,
-      expiresIn: '15m',
+      expiresIn: `${tokenExpiresIn}m`,
     });
   } catch (err) {
     if (err.code === 'P2002') {
@@ -112,9 +112,9 @@ async function login(req, res, next) {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.TOKEN_SECRET,
       {
-        expiresIn: 15 * 60,
+        expiresIn: tokenExpiresIn * 60,
       }
     );
 
@@ -122,9 +122,9 @@ async function login(req, res, next) {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: 30 * 60,
+        expiresIn: refreshTokenExpiresIn * 60,
       }
     );
 
@@ -132,7 +132,7 @@ async function login(req, res, next) {
       token,
       refreshToken,
       username: user.username,
-      expiresIn: '15m',
+      expiresIn: `${tokenExpiresIn}m`,
     });
   } catch (err) {
     return next(err);
@@ -143,15 +143,18 @@ function refreshToken(req, res, next) {
   const { refreshToken } = matchedData(req);
 
   try {
-    const user = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const user = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
 
     const newAccessToken = jwt.sign(
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.TOKEN_SECRET,
       {
-        expiresIn: 15 * 60,
+        expiresIn: tokenExpiresIn * 60,
       }
     );
 
@@ -159,16 +162,16 @@ function refreshToken(req, res, next) {
       {
         id: user.id,
       },
-      process.env.JWT_SECRET,
+      process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: 30 * 60,
+        expiresIn: refreshTokenExpiresIn * 60,
       }
     );
 
     return res.status(200).json({
       token: newAccessToken,
       refreshToken: newRefreshToken,
-      expiresIn: '15m',
+      expiresIn: `${tokenExpiresIn}m`,
     });
   } catch (err) {
     return next(err);
@@ -191,7 +194,7 @@ async function forgotPassword(req, res, next) {
 
     const token = jwt.sign(
       { id: user.id },
-      process.env.JWT_SECRET,
+      process.env.TOKEN_SECRET,
       { expiresIn: 10 * 60 }
     );
 
@@ -220,7 +223,7 @@ async function resetPassword (req, res, next) {
   const { token, password } = matchedData(req);
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
 
     const passwordHash = await bcrypt.hash(password, 12);
     await prisma.user.update({
