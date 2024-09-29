@@ -9,7 +9,7 @@ import path from 'path';
 const prisma = new PrismaClient();
 
 async function getAllProducts(req, res, next) {
-  const { organizationId } = req;
+  const { organizationId } = matchedData(req);
 
   try {
     const products = await prisma.product.findMany({
@@ -38,8 +38,7 @@ async function getAllProducts(req, res, next) {
 }
 
 async function getProduct(req, res, next) {
-  const { organizationId } = req;
-  const { productId } = matchedData(req);
+  const { organizationId, productId } = matchedData(req);
 
   try {
     const product = await prisma.product.findUnique({
@@ -97,7 +96,6 @@ async function getProduct(req, res, next) {
 }
 
 async function createProduct(req, res, next) {
-  const { organizationId } = req;
   const {
     image,
     name,
@@ -105,7 +103,8 @@ async function createProduct(req, res, next) {
     indirectCostPercent,
     notes,
     materials,
-    categoryId
+    categoryId,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -184,7 +183,6 @@ async function createProduct(req, res, next) {
 }
 
 async function updateProduct(req, res, next) {
-  const { organizationId } = req;
   const {
     productId,
     name,
@@ -192,7 +190,8 @@ async function updateProduct(req, res, next) {
     indirectCostPercent,
     notes,
     materials,
-    categoryId
+    categoryId,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -262,8 +261,7 @@ async function updateProduct(req, res, next) {
 }
 
 async function deleteProduct(req, res, next) {
-  const { organizationId } = req;
-  const { productId } = matchedData(req);
+  const { organizationId, productId } = matchedData(req);
 
   try {
     const product = await prisma.product.delete({

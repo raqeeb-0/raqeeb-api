@@ -6,7 +6,7 @@ import { CustomError } from '@lib/CustomError.js';
 const prisma = new PrismaClient();
 
 async function getAllPurchaseItems(req, res, next) {
-  const { organizationId } = req;
+  const { organizationId } = matchedData(req);
 
   try {
     const purchaseItems = await prisma.purchaseItem.findMany({
@@ -40,8 +40,7 @@ async function getAllPurchaseItems(req, res, next) {
 }
 
 async function getPurchaseItem(req, res, next) {
-  const { organizationId } = req;
-  const { purchaseItemId } = matchedData(req);
+  const { organizationId, purchaseItemId } = matchedData(req);
 
   try {
     const purchaseItem = await prisma.purchaseItem.findUnique({
@@ -82,13 +81,13 @@ async function getPurchaseItem(req, res, next) {
 }
 
 async function createPurchaseItem(req, res, next) {
-  const { organizationId } = req;
   const {
     name,
     type,
     price,
     notes,
-    categoryId
+    categoryId,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -151,13 +150,13 @@ async function createPurchaseItem(req, res, next) {
 }
 
 async function updatePurchaseItem(req, res, next) {
-  const { organizationId } = req;
   const {
     purchaseItemId,
     name,
     price,
     notes,
-    categoryId
+    categoryId,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -206,8 +205,7 @@ async function updatePurchaseItem(req, res, next) {
 }
 
 async function deletePurchaseItem(req, res, next) {
-  const { organizationId } = req;
-  const { purchaseItemId } = matchedData(req);
+  const { organizationId, purchaseItemId } = matchedData(req);
 
   try {
     const purchaseItem = await prisma.purchaseItem.delete({

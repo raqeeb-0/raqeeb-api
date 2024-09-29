@@ -6,7 +6,7 @@ import { CustomError } from '@lib/CustomError.js';
 const prisma = new PrismaClient();
 
 async function getAllCustomers(req, res, next) {
-  const { organizationId } = req;
+  const { organizationId } = matchedData(req);
 
   try {
     const customer = await prisma.customer.findMany({
@@ -29,8 +29,7 @@ async function getAllCustomers(req, res, next) {
 }
 
 async function getCustomer(req, res, next) {
-  const { organizationId } = req;
-  const { customerId } = matchedData(req);
+  const { organizationId, customerId } = matchedData(req);
 
   try {
     const customer = await prisma.customer.findUnique({
@@ -60,11 +59,11 @@ async function getCustomer(req, res, next) {
 }
 
 async function createCustomer(req, res, next) {
-  const { organizationId } = req;
   const {
     name,
     address,
-    phone
+    phone,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -102,12 +101,12 @@ async function createCustomer(req, res, next) {
 }
 
 async function updateCustomer(req, res, next) {
-  const { organizationId } = req;
   const {
     customerId,
     name,
     address,
-    phone
+    phone,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -149,8 +148,7 @@ async function updateCustomer(req, res, next) {
 }
 
 async function deleteCustomer(req, res, next) {
-  const { organizationId } = req;
-  const { customerId } = matchedData(req);
+  const { organizationId, customerId } = matchedData(req);
 
   try {
     const customer = await prisma.customer.delete({

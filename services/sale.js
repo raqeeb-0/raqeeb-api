@@ -6,7 +6,7 @@ import { CustomError } from '@lib/CustomError.js';
 const prisma = new PrismaClient();
 
 async function getAllSales(req, res, next) {
-  const { organizationId } = req;
+  const { organizationId } = matchedData(req);
 
   try {
     const sales = await prisma.sale.findMany({
@@ -34,8 +34,7 @@ async function getAllSales(req, res, next) {
 }
 
 async function getSale(req, res, next) {
-  const { organizationId } = req;
-  const { saleId } = matchedData(req);
+  const { organizationId, saleId } = matchedData(req);
 
   try {
     const sale = await prisma.sale.findUnique({
@@ -75,12 +74,12 @@ async function getSale(req, res, next) {
 }
 
 async function createSale(req, res, next) {
-  const { organizationId } = req;
   const {
     productId,
     customerId,
     quantity,
-    price
+    price,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -127,13 +126,13 @@ async function createSale(req, res, next) {
 }
 
 async function updateSale(req, res, next) {
-  const { organizationId } = req;
   const {
     saleId,
     productId,
     quantity,
     price,
-    customerId
+    customerId,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -184,8 +183,7 @@ async function updateSale(req, res, next) {
 }
 
 async function deleteSale(req, res, next) {
-  const { organizationId } = req;
-  const { saleId } = matchedData(req);
+  const { organizationId, saleId } = matchedData(req);
 
   try {
     const sale = await prisma.sale.delete({

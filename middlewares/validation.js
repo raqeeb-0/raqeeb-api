@@ -37,8 +37,6 @@ async function validateOrgId(req, res, next) {
     });
   }
 
-  req.organizationId = matchedData(req).organizationId;
-
   return next();
 }
 

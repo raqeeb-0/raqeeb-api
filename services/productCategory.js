@@ -6,7 +6,7 @@ import { CustomError } from '@lib/CustomError.js';
 const prisma = new PrismaClient();
 
 async function getAllProductCategories(req, res, next) {
-  const { organizationId } = req;
+  const { organizationId } = matchedData(req);
 
   try {
     const categories = await prisma.productCategory.findMany({
@@ -28,8 +28,7 @@ async function getAllProductCategories(req, res, next) {
 }
 
 async function getProductCategory(req, res, next) {
-  const { organizationId } = req;
-  const { categoryId } = matchedData(req);
+  const { organizationId, categoryId } = matchedData(req);
 
   try {
     const category = await prisma.productCategory.findUnique({
@@ -56,8 +55,10 @@ async function getProductCategory(req, res, next) {
 }
 
 async function createProductCategory(req, res, next) {
-  const { organizationId } = req;
-  const { name } = matchedData(req);
+  const {
+    name,
+    organizationId
+  } = matchedData(req);
 
   try {
     const category = await prisma.productCategory.create({
@@ -89,10 +90,10 @@ async function createProductCategory(req, res, next) {
 }
 
 async function updateProductCategory(req, res, next) {
-  const { organizationId } = req;
   const {
     categoryId,
-    name
+    name,
+    organizationId
   } = matchedData(req);
 
   try {
@@ -129,8 +130,7 @@ async function updateProductCategory(req, res, next) {
 }
 
 async function deleteProductCategory(req, res, next) {
-  const { organizationId } = req;
-  const { categoryId } = matchedData(req);
+  const { organizationId, categoryId } = matchedData(req);
 
   try {
     const category = await prisma.productCategory.delete({
