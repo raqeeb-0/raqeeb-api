@@ -4,14 +4,14 @@ import {
   passwordReset,
   passwordForget,
   userLogin,
-  userSignup
+  userSignup,
+  token
 } from '@schemas/authentication.js';
 import { validate } from '@middlewares/validation.js';
 import {
   resetPassword,
   forgotPassword,
-  isLoggedin,
-  logout,
+  refreshToken,
   login,
   signup
 } from '@services/authentication.js';
@@ -33,14 +33,11 @@ router.post(
   login
 );
 
-router.get(
-  '/logout',
-  logout
-);
-
-router.get(
-  '/isloggedin',
-  isLoggedin
+router.post(
+  '/refresh-token',
+  checkSchema(token, ['body']),
+  validate,
+  refreshToken
 );
 
 router.post(

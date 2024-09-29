@@ -9,6 +9,17 @@ import {
 import { validation } from '@lib/validationMessages.js';
 
 
+const token = {
+  refreshToken: {
+    notEmpty: {
+      errorMessage: validation.notEmptyMsg,
+    },
+    isJWT: {
+      errorMessage: 'Invalid token',
+    },
+  },
+}
+
 const userSignup = {
   email: {
     notEmpty: {
@@ -135,6 +146,7 @@ const passwordReset = {
 
 
 export {
+  token,
   userSignup,
   userLogin,
   passwordForget,

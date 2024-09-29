@@ -3,11 +3,14 @@ import { CustomError } from '@lib/CustomError.js';
 
 
 function authorizeUser(req, res, next) {
-  const token = req.cookies.authorization;
+  const authHeader = req.headers['authorization'];
+
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return next(new CustomError({
-      statusCode: 401
+      statusCode: 401,
+      message: 'Access denied. No token provided.'
     }));
   }
 
@@ -19,8 +22,8 @@ function authorizeUser(req, res, next) {
     return next();
   } catch (err) {
     return next(new CustomError({
-      statusCode: 401,
-      message: err.message
+      statusCode: 403,
+      message: 'Invalid or expired token.'
     }));
   }
 }

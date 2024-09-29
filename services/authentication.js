@@ -33,16 +33,35 @@ async function signup(req, res, next) {
       select: {
         id: true,
         username: true,
+        email: true,
       }
     });
+  
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 15 * 60,
+      }
+    );
 
-    req.user = user;
-    setAuthCookie(req, res, next);
+    const refreshToken = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 30 * 60,
+      }
+    );
 
     return res.status(201).json({
-      status: 'success',
-      message: 'Account created successfully',
+      token,
+      refreshToken,
       username: user.username,
+      expiresIn: '15m',
     });
   } catch (err) {
     if (err.code === 'P2002') {
@@ -67,6 +86,7 @@ async function login(req, res, next) {
       select: {
         id: true,
         username: true,
+        email: true,
         password: true,
       }
     });
@@ -87,49 +107,71 @@ async function login(req, res, next) {
         message: 'Wrong password.'
       });
     }
+  
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 15 * 60,
+      }
+    );
 
-    req.user = user;
-    setAuthCookie(req, res, next);
+    const refreshToken = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 30 * 60,
+      }
+    );
 
     return res.status(200).json({
-      status: 'success',
-      message: 'Logged in successfully.',
+      token,
+      refreshToken,
       username: user.username,
+      expiresIn: '15m',
     });
   } catch (err) {
     return next(err);
   }
 }
 
-function logout(req, res) {
-  res.clearCookie('authorization');
-  return res.status(200).json({
-    status: 'success',
-    message: 'Logged out successfully'
-  });
-}
-
-function isLoggedin(req, res, next) {
-  const token = req.cookies.authorization;
-
-  if (!token) {
-    return next(new CustomError({
-      statusCode: 401
-    }));
-  }
+function refreshToken(req, res, next) {
+  const { refreshToken } = matchedData(req);
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    const newAccessToken = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 15 * 60,
+      }
+    );
+
+    const newRefreshToken = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 30 * 60,
+      }
+    );
 
     return res.status(200).json({
-      status: 'success',
-      username: decoded.username,
-    })
+      token: newAccessToken,
+      refreshToken: newRefreshToken,
+      expiresIn: '15m',
+    });
   } catch (err) {
-    return next(new CustomError({
-      statusCode: 401,
-      message: err.message
-    }));
+    return next(err);
   }
 }
 
@@ -147,13 +189,10 @@ async function forgotPassword(req, res, next) {
       });
     }
 
-    const expiryPeriodInMinutes = 10;
-    const milliSecondsPerMinute = 60 * 1000;
-
     const token = jwt.sign(
       { id: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: expiryPeriodInMinutes * milliSecondsPerMinute }
+      { expiresIn: 10 * 60 }
     );
 
     const htmlTemplate = resetPasswordTemplate({
@@ -170,8 +209,7 @@ async function forgotPassword(req, res, next) {
     await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
-      status: 'success',
-      message: 'Password reset link sent to email'
+      message: 'Password reset link sent to your email'
     });
   } catch (err) {
     return next(err);
@@ -195,8 +233,7 @@ async function resetPassword (req, res, next) {
     });
 
     return res.status(200).json({
-      status: 'success',
-      message: 'Password reset successful'
+      message: 'Password reset succeeded'
     });
   } catch (err) {
     if (err.message === 'jwt expired') {
@@ -213,8 +250,7 @@ async function resetPassword (req, res, next) {
 export {
   signup,
   login,
-  logout,
-  isLoggedin,
+  refreshToken,
   forgotPassword,
   resetPassword,
 }
