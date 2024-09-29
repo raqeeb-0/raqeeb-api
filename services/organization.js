@@ -138,10 +138,13 @@ async function deleteOrganization(req, res, next) {
     const organizationData = prisma.organization.update({
       where: { id: organizationId },
       data: {
-        materialPurchases: {
+        purchases: {
           deleteMany: {},
         },
-        expensePurchases: {
+        purchaseItems: {
+          deleteMany: {},
+        },
+        purchaseItemCategories: {
           deleteMany: {},
         },
         sales: {
@@ -156,28 +159,16 @@ async function deleteOrganization(req, res, next) {
         suppliers: {
           deleteMany: {},
         },
-        materials: {
-          deleteMany: {},
-        },
-        expenses: {
-          deleteMany: {},
-        },
         products: {
           deleteMany: {},
         },
         staff: {
           deleteMany: {},
         },
-        expenseCategories: {
-          deleteMany: {},
-        },
-        materialCategories: {
-          deleteMany: {},
-        },
         productCategories: {
           deleteMany: {},
         },
-        billOfMaterials: {
+        productBillOfMaterials: {
           deleteMany: {},
         },
       },
