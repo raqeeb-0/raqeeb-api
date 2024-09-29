@@ -5,7 +5,9 @@ import { userId } from '@schemas/common.js';
 import {
   userUpdate
 } from '@schemas/user.js';
-import { validate } from '@middlewares/validation.js';
+import {
+  checkValidationResult
+} from '@middlewares/validation.js';
 import {
   deleteUser,
   updateUser,
@@ -19,7 +21,7 @@ router.get(
   '/',
   authorizeUser,
   checkSchema(userId, ['params']),
-  validate,
+  checkValidationResult,
   getUser
 );
 
@@ -28,7 +30,7 @@ router.patch(
   authorizeUser,
   checkSchema(userId, ['params']),
   checkSchema(userUpdate, ['body']),
-  validate,
+  checkValidationResult,
   updateUser
 );
 
@@ -36,7 +38,7 @@ router.delete(
   '/',
   authorizeUser,
   checkSchema(userId, ['params']),
-  validate,
+  checkValidationResult,
   deleteUser
 );
 

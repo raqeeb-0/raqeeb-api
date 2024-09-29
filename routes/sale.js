@@ -1,14 +1,14 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
 import { authorizeUser } from '@middlewares/authorization.js';
-import { getOrgContext } from '@middlewares/orgContextProvider.js';
-import { organizationId } from '@schemas/common.js';
 import {
   saleUpdate,
   saleCreate,
   saleId
 } from '@schemas/sale.js';
-import { validate } from '@middlewares/validation.js';
+import {
+  checkValidationResult
+} from '@middlewares/validation.js';
 import {
   deleteSale,
   updateSale,
@@ -23,50 +23,39 @@ const router = express.Router();
 router.get(
   '/',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
-  validate,
   getAllSales
 );
 
 router.get(
   '/:saleId',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(saleId, ['params']),
-  validate,
+  checkValidationResult,
   getSale
 );
 
 router.post(
   '/',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(saleCreate, ['body']),
-  validate,
+  checkValidationResult,
   createSale
 );
 
 router.patch(
   '/:saleId',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(saleId, ['params']),
   checkSchema(saleUpdate, ['body']),
-  validate,
+  checkValidationResult,
   updateSale
 );
 
 router.delete(
   '/:saleId',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(saleId, ['params']),
-  validate,
+  checkValidationResult,
   deleteSale
 );
 

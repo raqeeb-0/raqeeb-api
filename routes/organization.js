@@ -9,9 +9,10 @@ import {
   organizationUpdate,
   organizationCreate
 } from '@schemas/organization.js';
-import { validate } from '@middlewares/validation.js';
 import {
-  selectOrganization,
+  checkValidationResult
+} from '@middlewares/validation.js';
+import {
   deleteOrganization,
   updateOrganization,
   createOrganization,
@@ -26,7 +27,7 @@ router.get(
   '/',
   authorizeUser,
   checkSchema(userId, ['params']),
-  validate,
+  checkValidationResult,
   getAllOrganizations
 );
 
@@ -35,7 +36,7 @@ router.get(
   authorizeUser,
   checkSchema(userId, ['params']),
   checkSchema(organizationId, ['params']),
-  validate,
+  checkValidationResult,
   getOrganization
 );
 
@@ -44,7 +45,7 @@ router.post(
   authorizeUser,
   checkSchema(userId, ['params']),
   checkSchema(organizationCreate, ['body']),
-  validate,
+  checkValidationResult,
   createOrganization
 );
 
@@ -54,7 +55,7 @@ router.patch(
   checkSchema(userId, ['params']),
   checkSchema(organizationId, ['params']),
   checkSchema(organizationUpdate, ['body']),
-  validate,
+  checkValidationResult,
   updateOrganization
 );
 
@@ -63,17 +64,8 @@ router.delete(
   authorizeUser,
   checkSchema(userId, ['params']),
   checkSchema(organizationId, ['params']),
-  validate,
+  checkValidationResult,
   deleteOrganization
-);
-
-router.post(
-  '/select',
-  authorizeUser,
-  checkSchema(userId, ['params']),
-  checkSchema(organizationId, ['body']),
-  validate,
-  selectOrganization
 );
 
 

@@ -7,7 +7,7 @@ import { CustomError } from '@lib/CustomError.js';
 const prisma = new PrismaClient();
 
 async function getAllProductionOrders(req, res, next) {
-  const { organizationId } = matchedData(req);
+  const { organizationId } = req;
 
   try {
     const productionOrders = await prisma.productionOrder.findMany({
@@ -69,10 +69,10 @@ async function getProductionOrder(req, res, next) {
 }
 
 async function createProductionOrder(req, res, next) {
+  const { organizationId } = req;
   const {
     count,
-    productId,
-    organizationId
+    productId
   } = matchedData(req);
 
   try {
@@ -112,10 +112,10 @@ async function createProductionOrder(req, res, next) {
 }
 
 async function updateProductionOrder(req, res, next) {
+  const { organizationId } = req;
   const {
     productionOrderId,
-    status,
-    organizationId
+    status
   } = matchedData(req);
 
   try {
@@ -154,7 +154,8 @@ async function updateProductionOrder(req, res, next) {
 }
 
 async function deleteProductionOrder(req, res, next) {
-  const { organizationId, productionOrderId } = matchedData(req);
+  const { organizationId } = req;
+  const { productionOrderId } = matchedData(req);
 
   try {
     const productionOrder = await prisma.productionOrder.delete({

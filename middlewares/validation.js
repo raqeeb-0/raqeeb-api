@@ -1,12 +1,16 @@
-import { validationResult } from 'express-validator';
+import {
+  checkSchema,
+  matchedData,
+  validationResult
+} from 'express-validator';
+import { organizationId } from '@schemas/common.js';
 
 
-export function validate(req, res, next) {
+function checkValidationResult(req, res, next) {
   const result = validationResult(req);
-  if (result.isEmpty()) {
-    next()
-  } else {
-    res.status(400).json({
+
+  if (!result.isEmpty()) {
+    return res.status(400).json({
       error: {
         field: result.array()[0].path,
         value: result.array()[0].value,
@@ -14,4 +18,32 @@ export function validate(req, res, next) {
       }
     });
   }
+
+  return next();
+}
+
+async function validateOrgId(req, res, next) {
+  await checkSchema(organizationId, ['params']).run(req);
+
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    return res.status(400).json({
+      error: {
+        field: result.array()[0].path,
+        value: result.array()[0].value,
+        message: result.array()[0].msg,
+      }
+    });
+  }
+
+  req.organizationId = matchedData(req).organizationId;
+
+  return next();
+}
+
+
+export {
+  checkValidationResult,
+  validateOrgId,
 }
