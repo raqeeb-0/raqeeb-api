@@ -9,7 +9,7 @@ async function getAllCategories(req, res, next) {
   const { organizationId } = matchedData(req);
 
   try {
-    const categories = await prisma.category.findMany({
+    const categories = await prisma.purchaseItemCategory.findMany({
       where: { organizationId },
       select: {
         id: true,
@@ -31,7 +31,7 @@ async function getCategory(req, res, next) {
   const { organizationId, categoryId } = matchedData(req);
 
   try {
-    const category = await prisma.category.findUnique({
+    const category = await prisma.purchaseItemCategory.findUnique({
       where: {
         organizationId,
         id: categoryId,
@@ -61,7 +61,7 @@ async function createCategory(req, res, next) {
   } = matchedData(req);
 
   try {
-    const category = await prisma.category.create({
+    const category = await prisma.purchaseItemCategory.create({
       data: {
         name,
         organization: {
@@ -97,7 +97,7 @@ async function updateCategory(req, res, next) {
   } = matchedData(req);
 
   try {
-    const category = await prisma.category.update({
+    const category = await prisma.purchaseItemCategory.update({
       where: {
         organizationId,
         id: categoryId,
@@ -133,7 +133,7 @@ async function deleteCategory(req, res, next) {
   const { organizationId, categoryId } = matchedData(req);
 
   try {
-    const category = await prisma.category.delete({
+    const category = await prisma.purchaseItemCategory.delete({
       where: {
         organizationId,
         id: categoryId,
