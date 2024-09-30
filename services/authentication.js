@@ -174,7 +174,10 @@ function refreshToken(req, res, next) {
       expiresIn: `${tokenExpiresIn}m`,
     });
   } catch (err) {
-    return next(err);
+    return next(new CustomError({
+      statusCode: 401,
+      message: 'Invalid or expired token.'
+    }));
   }
 }
 
