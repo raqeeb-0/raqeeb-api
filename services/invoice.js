@@ -34,21 +34,85 @@ async function getAllInvoices(req, res, next) {
   }
 }
 
+async function getInvoice(req, res, next) {
+  const { organizationId, invoiceId } = matchedData(req);
+
+  try {
+    const invoice = await prisma.invoice.findUnique({
+      where: {
+        organizationId,
+        id: invoiceId,
+      },
+      select: {
+        invoiceNumber: true,
+        totalAmount: true,
+        effectiveDate: true,
+        createdAt: true,
+        supplier: {
+          select: {
+            name: true,
+          },
+        },
+        purchaseItems: true,
+      },
+    });
+    if (!invoice) {
+      throw new CustomError({
+        statusCode: 404
+      });
+    }
+
+    return res.status(200).json(invoice);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function createInvoice(req, res, next) {
   const {
-    effectiveDate,
     invoiceNumber,
-    supplierId,
+    effectiveDate,
     totalAmount,
+    purchaseItems,
+    supplierId,
     organizationId
   } = matchedData(req);
+
+  if (purchaseItems.length === 0) {
+    return next(
+      new CustomError({
+        statusCode: 400,
+        message: 'Purchase Items list should be not empty'
+      })
+    );
+  }
 
   try {
     const invoice = await prisma.invoice.create({
       data: {
-        effectiveDate,
         invoiceNumber,
+        effectiveDate,
         totalAmount,
+        purchaseItems: {
+          create: purchaseItems.map((item) => {
+            return {
+              purchaseItem: {
+                connect: {
+                  id: item.id,
+                },
+              },
+              description: item.description,
+              quantity: item.quantity,
+              price: item.price,
+              amount: item.amount,
+              organization: {
+                connect: {
+                  id: organizationId,
+                },
+              },
+            };
+          }),
+        },
         supplier: {
           connect: {
             id: supplierId,
@@ -65,11 +129,23 @@ async function createInvoice(req, res, next) {
         effectiveDate: true,
         invoiceNumber: true,
         totalAmount: true,
+        supplierId: true,
+        purchaseItems: true,
       },
     });
 
     return res.status(201).json(invoice);
   } catch (err) {
+
+    if (err.code === 'P2025') {
+      return next(
+        new CustomError({
+          statusCode: 404,
+          message: `${err.meta.cause.split("'")[1]} not found`
+        })
+      );
+    }
+
     return next(err);
   }
 }
@@ -77,5 +153,6 @@ async function createInvoice(req, res, next) {
 
 export {
   getAllInvoices,
+  getInvoice,
   createInvoice,
 }

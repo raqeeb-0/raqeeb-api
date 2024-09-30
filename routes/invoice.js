@@ -2,13 +2,15 @@ import express from 'express';
 import { checkSchema } from 'express-validator';
 import { authorizeUser } from '@middlewares/authorization.js';
 import {
-  invoiceCreate
+  invoiceCreate,
+  invoiceId
 } from '@schemas/invoice.js';
 import {
   checkValidationResult
 } from '@middlewares/validation.js';
 import {
   createInvoice,
+  getInvoice,
   getAllInvoices
 } from '@services/invoice.js';
 
@@ -20,6 +22,14 @@ router.get(
   authorizeUser,
   getAllInvoices
 );
+
+router.get(
+  '/:invoiceId',
+  authorizeUser,
+  checkSchema(invoiceId, ['params']),
+  checkValidationResult,
+  getInvoice
+)
 
 router.post(
   '/',
