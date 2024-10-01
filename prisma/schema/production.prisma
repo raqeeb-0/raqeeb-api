@@ -30,7 +30,7 @@ model ProductionOrder {
   @@map("production_orders")
 }
 
-// Suppose that Inventory model is here ... Actually it is there in purchasing.prisma
+// Suppose that Inventory model is here ... Actually it is there at purchasing.prisma
 
 model ProductBillOfMaterials {
   productId      String

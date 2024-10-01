@@ -69,11 +69,13 @@ model PurchaseItem {
 }
 
 model Inventory {
-  id         String                   @id @default(uuid())
-  materialId String                   @unique
-  quantity   Float                    @default(0.00)
-  material   PurchaseItem             @relation(fields: [materialId], references: [id])
-  products   ProductBillOfMaterials[]
+  id             String                   @id @default(uuid())
+  materialId     String                   @unique
+  quantity       Float                    @default(0.00)
+  organizationId String
+  material       PurchaseItem             @relation(fields: [materialId], references: [id])
+  organization   Organization             @relation(fields: [organizationId], references: [id])
+  products       ProductBillOfMaterials[]
 
   @@map("inventory")
 }

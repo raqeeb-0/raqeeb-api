@@ -31,6 +31,7 @@ model Organization {
   purchases              Purchase[]
   purchaseItems          PurchaseItem[]
   purchaseItemCategories PurchaseItemCategory[]
+  inventory              Inventory[]
 
   @@unique([userId, name])
   @@map("organizations")
