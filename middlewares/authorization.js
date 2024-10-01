@@ -28,7 +28,32 @@ function authorizeUser(req, res, next) {
   }
 }
 
+function authorizeAdmin(req, res, next) {
+  const { email, password } = req.body;
+
+  if (!email && !password) {
+    return next(
+      new CustomError({
+        status: 400,
+        message: 'Crendentials not provided'
+      })
+    );
+  }
+
+  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+    return next();
+  }
+
+  return next(
+    new CustomError({
+      status: 401,
+      message: 'Access denied'
+    })
+  );
+}
+
 
 export {
   authorizeUser,
+  authorizeAdmin,
 }

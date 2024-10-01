@@ -15,6 +15,7 @@ import {
 
 import { welcome } from '@services/welcome.js';
 
+import adminRoutes from '@routes/admin.js';
 import userRoutes from '@routes/user.js';
 import organizationRoutes from '@routes/organization.js';
 import authenticationRoutes from '@routes/authentication.js';
@@ -64,6 +65,7 @@ const orgRouter = express.Router();
 app.get('/', welcome);
 app.use('/api/v2', appRouter);
 appRouter.get('/', welcome);
+appRouter.use('/admin', adminRoutes);
 appRouter.use('/auth', authenticationRoutes);
 appRouter.use('/organizations', organizationRoutes);
 appRouter.use('/users', userRoutes);
