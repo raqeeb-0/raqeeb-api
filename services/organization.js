@@ -191,8 +191,6 @@ async function deleteOrganization(req, res, next) {
       organization
     ]);
 
-    res.clearCookie('context');
-
     return res.status(200).json(organization);
   } catch (err) {
     if (err.code === 'P2025') {

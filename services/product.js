@@ -119,8 +119,6 @@ async function createProduct(req, res, next) {
 
     const imagePath = path.join(uploadsDir, `${Date.now()}-${image.name}`);
 
-    await fs.writeFile(imagePath, imageBuffer);
-
     const product = await prisma.product.create({
       data: {
         name,
@@ -133,7 +131,7 @@ async function createProduct(req, res, next) {
             return {
               material: {
                 connect: {
-                  id: material.id,
+                  materialId: material.id,
                 },
               },
               quantity: material.quantity,
@@ -169,6 +167,8 @@ async function createProduct(req, res, next) {
         categoryId: true,
       },
     });
+
+    await fs.writeFile(imagePath, imageBuffer);
 
     return res.status(201).json(product);
   } catch (err) {
