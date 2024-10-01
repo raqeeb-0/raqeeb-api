@@ -6,11 +6,14 @@ import { CustomError } from '@lib/CustomError.js';
 const prisma = new PrismaClient();
 
 async function getAllPurchaseItems(req, res, next) {
-  const { organizationId } = matchedData(req);
+  const { organizationId, type } = matchedData(req);
 
   try {
     const purchaseItems = await prisma.purchaseItem.findMany({
-      where: { organizationId },
+      where: {
+        type,
+        organizationId,
+      },
       select: {
         id: true,
         name: true,
@@ -120,7 +123,15 @@ async function createPurchaseItem(req, res, next) {
     }
 
     if (type === 'storable') {
-      prismaPurchaseObj.data.inventory = { create: {} };
+      prismaPurchaseObj.data.inventory = {
+        create: {
+          organization: {
+            connect: {
+              id: organizationId,
+            },
+          },
+        },
+      };
     }
     
     const purchaseItem = await prisma.purchaseItem.create(

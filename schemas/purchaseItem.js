@@ -19,6 +19,19 @@ const purchaseItemId = {
   },
 }
 
+const purchaseItemQuery = {
+  type: {
+    optional: true,
+    notEmpty: {
+      errorMessage: validation.notEmptyMsg,
+    },
+    isIn: {
+      options: [PURCHASE_ITEM_TYPES],
+      errorMessage: validation.isInMsg + PURCHASE_ITEM_TYPES.join(', '),
+    },
+  }
+}
+
 const purchaseItemCreate = {
   name: {
     notEmpty: {
@@ -82,6 +95,7 @@ Object.keys(purchaseItemUpdate).forEach(key => {
 
 export {
   purchaseItemId,
+  purchaseItemQuery,
   purchaseItemCreate,
   purchaseItemUpdate,
 }

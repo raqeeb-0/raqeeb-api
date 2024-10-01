@@ -4,6 +4,7 @@ import { authorizeUser } from '@middlewares/authorization.js';
 import {
   purchaseItemUpdate,
   purchaseItemCreate,
+  purchaseItemQuery,
   purchaseItemId
 } from '@schemas/purchaseItem.js';
 import {
@@ -23,6 +24,8 @@ const router = express.Router();
 router.get(
   '/',
   authorizeUser,
+  checkSchema(purchaseItemQuery, ['query']),
+  checkValidationResult,
   getAllPurchaseItems
 );
 
