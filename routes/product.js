@@ -1,21 +1,21 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeUser } from '@middlewares/authorization.js';
+import { authorizeUser } from '../middlewares/authorization.js';
 import {
   productUpdate,
   productCreate,
   productId
-} from '@schemas/product.js';
+} from '../schemas/product.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   deleteProduct,
   updateProduct,
   createProduct,
   getProduct,
   getAllProducts
-} from '@services/product.js';
+} from '../services/product.js';
 
 
 const router = express.Router();

@@ -1,4 +1,4 @@
-import { validation } from '@lib/validationMessages.js';
+import { validation } from '../lib/validationMessages.js';
 
 
 const userId = {

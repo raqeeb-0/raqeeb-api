@@ -3,7 +3,7 @@ import {
   matchedData,
   validationResult
 } from 'express-validator';
-import { organizationId } from '@schemas/common.js';
+import { organizationId } from '../schemas/common.js';
 
 
 function checkValidationResult(req, res, next) {

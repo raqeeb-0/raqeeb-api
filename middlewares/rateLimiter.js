@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { CustomError } from '@lib/CustomError.js';
+import { CustomError } from '../lib/CustomError.js';
 
 
 let redis;

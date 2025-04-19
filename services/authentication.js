@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { transporter } from '@lib/mailer.js';
+import { transporter } from '../lib/mailer.js';
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
-import { CustomError } from '@lib/CustomError.js';
-import { capitalizeFirstLetter } from '@lib/utils.js';
-import { resetPasswordTemplate } from '@lib/templates.js';
+import { CustomError } from '../lib/CustomError.js';
+import { capitalizeFirstLetter } from '../lib/utils.js';
+import { resetPasswordTemplate } from '../lib/templates.js';
 
 
 const prisma = new PrismaClient();

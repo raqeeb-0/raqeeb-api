@@ -6,17 +6,17 @@ import {
   userLogin,
   userSignup,
   token
-} from '@schemas/authentication.js';
+} from '../schemas/authentication.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   resetPassword,
   forgotPassword,
   refreshToken,
   login,
   signup
-} from '@services/authentication.js';
+} from '../services/authentication.js';
 
 
 const router = express.Router();

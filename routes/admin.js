@@ -1,12 +1,12 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeAdmin } from '@middlewares/authorization.js';
+import { authorizeAdmin } from '../middlewares/authorization.js';
 import {
 
-} from '@schemas/admin.js';
+} from '../schemas/admin.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   getAllUsers,
   getAllPurchaseItems,
@@ -14,7 +14,7 @@ import {
   deleteAllUsers,
   deleteAllOrganizations,
   deleteAllPurchaseItems
-} from '@services/admin.js';
+} from '../services/admin.js';
 
 
 const router = express.Router();

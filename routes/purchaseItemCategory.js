@@ -1,21 +1,21 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeUser } from '@middlewares/authorization.js';
+import { authorizeUser } from '../middlewares/authorization.js';
 import {
   categoryUpdate,
   categoryCreate,
   categoryId
-} from '@schemas/purchaseItemCategory.js';
+} from '../schemas/purchaseItemCategory.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   deleteCategory,
   updateCategory,
   createCategory,
   getCategory,
   getAllCategories
-} from '@services/purchaseItemCategory.js';
+} from '../services/purchaseItemCategory.js';
 
 
 const router = express.Router();

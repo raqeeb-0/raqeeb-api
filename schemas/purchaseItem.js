@@ -4,8 +4,8 @@ import {
   NOTE_MIN_LEN,
   NOTE_MAX_LEN,
   PURCHASE_ITEM_TYPES
-} from '@lib/constants.js';
-import { validation } from '@lib/validationMessages.js';
+} from '../lib/constants.js';
+import { validation } from '../lib/validationMessages.js';
 
 
 const purchaseItemId = {

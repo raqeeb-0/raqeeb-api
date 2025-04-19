@@ -1,22 +1,22 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeUser } from '@middlewares/authorization.js';
+import { authorizeUser } from '../middlewares/authorization.js';
 import {
   purchaseItemUpdate,
   purchaseItemCreate,
   purchaseItemQuery,
   purchaseItemId
-} from '@schemas/purchaseItem.js';
+} from '../schemas/purchaseItem.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   deletePurchaseItem,
   updatePurchaseItem,
   createPurchaseItem,
   getPurchaseItem,
   getAllPurchaseItems
-} from '@services/purchaseItem.js';
+} from '../services/purchaseItem.js';
 
 
 const router = express.Router();

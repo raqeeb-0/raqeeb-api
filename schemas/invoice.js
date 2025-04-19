@@ -3,8 +3,8 @@ import {
   NOTE_MAX_LEN,
   INVOICE_REF_MIN_LEN,
   INVOICE_REF_MAX_LEN
-} from '@lib/constants.js';
-import { validation } from '@lib/validationMessages.js';
+} from '../lib/constants.js';
+import { validation } from '../lib/validationMessages.js';
 
 
 const invoiceId = {

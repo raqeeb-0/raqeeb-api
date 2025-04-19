@@ -4,31 +4,31 @@ import morgan from 'morgan';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
-import { logger } from '@lib/logger.js';
-import { dbCheck } from '@lib/dbCheck.js';
-import { rateLimiter } from '@middlewares/rateLimiter.js';
-import { validateOrgId } from '@middlewares/validation.js';
+import { logger } from './lib/logger.js';
+import { dbCheck } from './lib/dbCheck.js';
+import { rateLimiter } from './middlewares/rateLimiter.js';
+import { validateOrgId } from './middlewares/validation.js';
 import {
   errorHandler,
   notFoundHandler
-} from '@middlewares/errorHandler.js';
+} from './middlewares/errorHandler.js';
 
-import { welcome } from '@services/welcome.js';
+import { welcome } from './services/welcome.js';
 
-import adminRoutes from '@routes/admin.js';
-import userRoutes from '@routes/user.js';
-import organizationRoutes from '@routes/organization.js';
-import authenticationRoutes from '@routes/authentication.js';
+import adminRoutes from './routes/admin.js';
+import userRoutes from './routes/user.js';
+import organizationRoutes from './routes/organization.js';
+import authenticationRoutes from './routes/authentication.js';
 
-import invoiceRoutes from '@routes/invoice.js';
-import purchaseItemRoutes from '@routes/purchaseItem.js';
-import purchaseItemCategoryRoutes from '@routes/purchaseItemCategory.js';
-import saleRoutes from '@routes/sale.js';
-import customerRoutes from '@routes/customer.js';
-import supplierRoutes from '@routes/supplier.js';
-import productionOrderRoutes from '@routes/productionOrder.js';
-import productRoutes from '@routes/product.js';
-import productCategoryRoutes from '@routes/productCategory.js';
+import invoiceRoutes from './routes/invoice.js';
+import purchaseItemRoutes from './routes/purchaseItem.js';
+import purchaseItemCategoryRoutes from './routes/purchaseItemCategory.js';
+import saleRoutes from './routes/sale.js';
+import customerRoutes from './routes/customer.js';
+import supplierRoutes from './routes/supplier.js';
+import productionOrderRoutes from './routes/productionOrder.js';
+import productRoutes from './routes/product.js';
+import productCategoryRoutes from './routes/productCategory.js';
 
 
 const app = express();

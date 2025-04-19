@@ -1,18 +1,18 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeUser } from '@middlewares/authorization.js';
+import { authorizeUser } from '../middlewares/authorization.js';
 import {
   invoiceCreate,
   invoiceId
-} from '@schemas/invoice.js';
+} from '../schemas/invoice.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   createInvoice,
   getInvoice,
   getAllInvoices
-} from '@services/invoice.js';
+} from '../services/invoice.js';
 
 
 const router = express.Router();

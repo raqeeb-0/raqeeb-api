@@ -1,24 +1,24 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeUser } from '@middlewares/authorization.js';
+import { authorizeUser } from '../middlewares/authorization.js';
 import {
   userId,
   organizationId
-} from '@schemas/common.js';
+} from '../schemas/common.js';
 import {
   organizationUpdate,
   organizationCreate
-} from '@schemas/organization.js';
+} from '../schemas/organization.js';
 import {
   checkValidationResult
-} from '@middlewares/validation.js';
+} from '../middlewares/validation.js';
 import {
   deleteOrganization,
   updateOrganization,
   createOrganization,
   getOrganization,
   getAllOrganizations
-} from '@services/organization.js';
+} from '../services/organization.js';
 
 
 const router = express.Router();

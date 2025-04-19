@@ -5,6 +5,7 @@
   "exports": "./index.js",
   "type": "module",
   "aliases": {
+    "@": "./",
     "@lib": "./lib",
     "@routes": "./routes",
     "@schemas": "./schemas",
@@ -12,8 +13,8 @@
     "@middlewares": "./middlewares"
   },
   "scripts": {
-    "start": "node --loader esm-module-alias/loader --no-warnings index.js",
-    "dev": "clear && nodemon --loader esm-module-alias/loader --no-warnings index.js"
+    "start": "node .",
+    "dev": "nodemon ."
   },
   "keywords": [],
   "author": "Raqeeb Inc.",

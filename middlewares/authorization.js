@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { CustomError } from '@lib/CustomError.js';
+import { CustomError } from '../lib/CustomError.js';
 
 
 function authorizeUser(req, res, next) {
