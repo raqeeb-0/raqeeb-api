@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
-import { CustomError } from '@lib/CustomError.js';
+import { CustomError } from '../lib/CustomError.js';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -59,8 +59,12 @@ async function getProduct(req, res, next) {
           select: {
             material: {
               select: {
-                id: true,
-                name: true,
+                material: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
               },
             },
             quantity: true,
@@ -83,8 +87,8 @@ async function getProduct(req, res, next) {
 
     product.materials = product.materials.map((item) => {
       return {
-        id: item.material.id,
-        name: item.material.name,
+        id: item.material.material.id,
+        name: item.material.material.name,
         quantity: item.quantity,
       };
     });
@@ -119,8 +123,6 @@ async function createProduct(req, res, next) {
 
     const imagePath = path.join(uploadsDir, `${Date.now()}-${image.name}`);
 
-    await fs.writeFile(imagePath, imageBuffer);
-
     const product = await prisma.product.create({
       data: {
         name,
@@ -133,7 +135,7 @@ async function createProduct(req, res, next) {
             return {
               material: {
                 connect: {
-                  id: material.id,
+                  materialId: material.id,
                 },
               },
               quantity: material.quantity,
@@ -169,6 +171,8 @@ async function createProduct(req, res, next) {
         categoryId: true,
       },
     });
+
+    await fs.writeFile(imagePath, imageBuffer);
 
     return res.status(201).json(product);
   } catch (err) {

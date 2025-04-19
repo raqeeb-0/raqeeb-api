@@ -1,7 +1,6 @@
-import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
-import { CustomError } from '@lib/CustomError.js';
+import { CustomError } from '../lib/CustomError.js';
 
 
 const prisma = new PrismaClient();
@@ -138,10 +137,13 @@ async function deleteOrganization(req, res, next) {
     const organizationData = prisma.organization.update({
       where: { id: organizationId },
       data: {
-        materialPurchases: {
+        purchases: {
           deleteMany: {},
         },
-        expensePurchases: {
+        purchaseItems: {
+          deleteMany: {},
+        },
+        purchaseItemCategories: {
           deleteMany: {},
         },
         sales: {
@@ -156,28 +158,16 @@ async function deleteOrganization(req, res, next) {
         suppliers: {
           deleteMany: {},
         },
-        materials: {
-          deleteMany: {},
-        },
-        expenses: {
-          deleteMany: {},
-        },
         products: {
           deleteMany: {},
         },
         staff: {
           deleteMany: {},
         },
-        expenseCategories: {
-          deleteMany: {},
-        },
-        materialCategories: {
-          deleteMany: {},
-        },
         productCategories: {
           deleteMany: {},
         },
-        billOfMaterials: {
+        productBillOfMaterials: {
           deleteMany: {},
         },
       },
@@ -201,65 +191,13 @@ async function deleteOrganization(req, res, next) {
       organization
     ]);
 
-    res.clearCookie('context');
-
     return res.status(200).json(organization);
   } catch (err) {
-    // console.log(err.meta.target[0]);
     if (err.code === 'P2025') {
       return next(new CustomError({
         statusCode: 404,
       }));
     }
-    return next(err);
-  }
-}
-
-async function selectOrganization(req, res, next) {
-  const { userId, organizationId } = matchedData(req);
-
-  try {
-    const organization = await prisma.organization.findUnique({
-      where: {
-        userId,
-        id: organizationId,
-      },
-      select: {
-        name: true,
-      },
-    });
-    if (!organization) {
-      throw new CustomError({
-        statusCode: 404
-      });
-    }
-
-    const expiryPeriodInDays = 10;
-    const milliSecondsPerDay = 24 * 60 * 60 * 1000;
-    const expiryPeriodInMilliSeconds = expiryPeriodInDays * milliSecondsPerDay;
-
-    const token = jwt.sign(
-      { organizationId },
-      process.env.JWT_SECRET,
-      { expiresIn: expiryPeriodInMilliSeconds }
-    );
-
-    res.cookie(
-      'context',
-      token,
-      {
-        maxAge: expiryPeriodInMilliSeconds,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-      }
-    )
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Organization selected successfully',
-    });
-  } catch (err) {
     return next(err);
   }
 }
@@ -271,5 +209,4 @@ export {
   createOrganization,
   updateOrganization,
   deleteOrganization,
-  selectOrganization
 }

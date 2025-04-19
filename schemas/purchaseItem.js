@@ -2,13 +2,14 @@ import {
   NAME_MIN_LEN,
   NAME_MAX_LEN,
   NOTE_MIN_LEN,
-  NOTE_MAX_LEN
-} from '@lib/constants.js';
-import { validation } from '@lib/validationMessages.js';
+  NOTE_MAX_LEN,
+  PURCHASE_ITEM_TYPES
+} from '../lib/constants.js';
+import { validation } from '../lib/validationMessages.js';
 
 
-const materialId = {
-  materialId: {
+const purchaseItemId = {
+  purchaseItemId: {
     notEmpty: {
       errorMessage: validation.notEmptyMsg,
     },
@@ -18,7 +19,20 @@ const materialId = {
   },
 }
 
-const materialCreate = {
+const purchaseItemQuery = {
+  type: {
+    optional: true,
+    notEmpty: {
+      errorMessage: validation.notEmptyMsg,
+    },
+    isIn: {
+      options: [PURCHASE_ITEM_TYPES],
+      errorMessage: validation.isInMsg + PURCHASE_ITEM_TYPES.join(', '),
+    },
+  }
+}
+
+const purchaseItemCreate = {
   name: {
     notEmpty: {
       errorMessage: validation.notEmptyMsg,
@@ -29,6 +43,15 @@ const materialCreate = {
     isLength: {
       options: { min: NAME_MIN_LEN, max: NAME_MAX_LEN },
       errorMessage: validation.nameLenMsg,
+    },
+  },
+  type: {
+    notEmpty: {
+      errorMessage: validation.notEmptyMsg,
+    },
+    isIn: {
+      options: [PURCHASE_ITEM_TYPES],
+      errorMessage: validation.isInMsg + PURCHASE_ITEM_TYPES.join(', '),
     },
   },
   price: {
@@ -64,14 +87,15 @@ const materialCreate = {
   }
 }
 
-const materialUpdate = structuredClone(materialCreate);
-Object.keys(materialUpdate).forEach(key => {
-  materialUpdate[key].optional = true;
+const purchaseItemUpdate = structuredClone(purchaseItemCreate);
+Object.keys(purchaseItemUpdate).forEach(key => {
+  purchaseItemUpdate[key].optional = true;
 });
 
 
 export {
-  materialId,
-  materialCreate,
-  materialUpdate,
+  purchaseItemId,
+  purchaseItemQuery,
+  purchaseItemCreate,
+  purchaseItemUpdate,
 }

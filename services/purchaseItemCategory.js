@@ -1,16 +1,15 @@
-import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
-import { CustomError } from '@lib/CustomError.js';
+import { CustomError } from '../lib/CustomError.js';
 
 
 const prisma = new PrismaClient();
 
-async function getAllExpenseCategories(req, res, next) {
+async function getAllCategories(req, res, next) {
   const { organizationId } = matchedData(req);
 
   try {
-    const categories = await prisma.expenseCategory.findMany({
+    const categories = await prisma.purchaseItemCategory.findMany({
       where: { organizationId },
       select: {
         id: true,
@@ -28,11 +27,11 @@ async function getAllExpenseCategories(req, res, next) {
   }
 }
 
-async function getExpenseCategory(req, res, next) {
+async function getCategory(req, res, next) {
   const { organizationId, categoryId } = matchedData(req);
 
   try {
-    const category = await prisma.expenseCategory.findUnique({
+    const category = await prisma.purchaseItemCategory.findUnique({
       where: {
         organizationId,
         id: categoryId,
@@ -55,14 +54,14 @@ async function getExpenseCategory(req, res, next) {
   }
 }
 
-async function createExpenseCategory(req, res, next) {
+async function createCategory(req, res, next) {
   const {
     name,
     organizationId
   } = matchedData(req);
 
   try {
-    const category = await prisma.expenseCategory.create({
+    const category = await prisma.purchaseItemCategory.create({
       data: {
         name,
         organization: {
@@ -90,7 +89,7 @@ async function createExpenseCategory(req, res, next) {
   }
 }
 
-async function updateExpenseCategory(req, res, next) {
+async function updateCategory(req, res, next) {
   const {
     categoryId,
     name,
@@ -98,7 +97,7 @@ async function updateExpenseCategory(req, res, next) {
   } = matchedData(req);
 
   try {
-    const category = await prisma.expenseCategory.update({
+    const category = await prisma.purchaseItemCategory.update({
       where: {
         organizationId,
         id: categoryId,
@@ -130,11 +129,11 @@ async function updateExpenseCategory(req, res, next) {
   }
 }
 
-async function deleteExpenseCategory(req, res, next) {
+async function deleteCategory(req, res, next) {
   const { organizationId, categoryId } = matchedData(req);
 
   try {
-    const category = await prisma.expenseCategory.delete({
+    const category = await prisma.purchaseItemCategory.delete({
       where: {
         organizationId,
         id: categoryId,
@@ -159,9 +158,9 @@ async function deleteExpenseCategory(req, res, next) {
 
 
 export {
-  getAllExpenseCategories,
-  getExpenseCategory,
-  createExpenseCategory,
-  updateExpenseCategory,
-  deleteExpenseCategory,
+  getAllCategories,
+  getCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 }

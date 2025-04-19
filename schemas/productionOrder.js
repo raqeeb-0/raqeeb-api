@@ -2,8 +2,8 @@ import {
   NAME_MIN_LEN,
   NAME_MAX_LEN,
   PRODUCTION_ORDER_STATUS_OPTIONS
-} from '@lib/constants.js';
-import { validation } from '@lib/validationMessages.js';
+} from '../lib/constants.js';
+import { validation } from '../lib/validationMessages.js';
 
 
 const productionOrderId = {

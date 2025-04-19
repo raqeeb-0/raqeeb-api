@@ -1,0 +1,100 @@
+enum Status {
+  pending
+  executing
+  fulfilled
+  cancelled
+}
+
+model ProductCategory {
+  id             String       @id @default(uuid())
+  name           String
+  organizationId String
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  products       Product[]
+
+  @@unique([organizationId, name])
+  @@map("product_categories")
+}
+
+model ProductionOrder {
+  id             String       @id @default(uuid())
+  count          Int
+  status         Status       @default(pending)
+  productId      String
+  organizationId String
+  createdAt      DateTime     @default(now())
+  product        Product      @relation(fields: [productId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("production_orders")
+}
+
+// Suppose that Inventory model is here ... Actually it is there at purchasing.prisma
+
+model ProductBillOfMaterials {
+  productId      String
+  materialId     String
+  quantity       Float
+  organizationId String
+  material       Inventory    @relation(fields: [materialId], references: [materialId])
+  product        Product      @relation(fields: [productId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([materialId, productId])
+  @@map("product_bill_of_materials")
+}
+
+model Product {
+  id                  String                   @id @default(uuid())
+  name                String
+  price               Float                    @default(0.00)
+  quantity            Float                    @default(0.00)
+  profitPercent       Float?
+  indirectCostPercent Float?
+  notes               String?
+  imagePath           String?
+  categoryId          String
+  organizationId      String
+  createdAt           DateTime                 @default(now())
+  organization        Organization             @relation(fields: [organizationId], references: [id])
+  category            ProductCategory          @relation(fields: [categoryId], references: [id])
+  sales               Sale[]
+  materials           ProductBillOfMaterials[]
+  productionOrders    ProductionOrder[]
+
+  @@unique([organizationId, name])
+  @@map("products")
+}
+
+model Sale {
+  id             String       @id @default(uuid())
+  quantity       Float        @default(0.00)
+  price          Float        @default(0.00)
+  productId      String
+  customerId     String
+  organizationId String
+  createdAt      DateTime     @default(now())
+  product        Product      @relation(fields: [productId], references: [id])
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("sales")
+}
+
+// Some model will be here
+
+model Customer {
+  id                String       @id @default(uuid())
+  name              String
+  address           String?
+  phone             String
+  accountReceivable Float        @default(0.00)
+  organizationId    String
+  createdAt         DateTime     @default(now())
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  sales             Sale[]
+
+  @@unique([organizationId, name])
+  @@map("customers")
+}

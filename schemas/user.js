@@ -3,8 +3,8 @@ import {
   NAME_MAX_LEN,
   EMAIL_MIN_LEN,
   EMAIL_MAX_LEN
-} from '@lib/constants.js';
-import { validation } from '@lib/validationMessages.js';
+} from '../lib/constants.js';
+import { validation } from '../lib/validationMessages.js';
 
 
 const userUpdate = {

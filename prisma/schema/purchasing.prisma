@@ -1,0 +1,93 @@
+enum PurchaseItemTypes {
+  storable
+  service
+  consumable
+}
+
+model Supplier {
+  id             String       @id @default(uuid())
+  name           String
+  address        String?
+  phone          String
+  accountPayable Float        @default(0.00)
+  organizationId String
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  invoices       Invoice[]
+
+  @@unique([organizationId, name])
+  @@map("suppliers")
+}
+
+model Invoice {
+  id             String       @id @default(uuid())
+  invoiceNumber  String       @default(cuid())
+  totalAmount    Float
+  effectiveDate  String
+  supplierId     String
+  organizationId String
+  createdAt      DateTime     @default(now())
+  supplier       Supplier     @relation(fields: [supplierId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  purchaseItems  Purchase[]
+
+  @@map("invoices")
+}
+
+model Purchase {
+  id             String       @id @default(uuid())
+  description    String?
+  quantity       Float
+  price          Float
+  amount         Float
+  invoiceId      String
+  purchaseItemId String
+  organizationId String
+  invoice        Invoice      @relation(fields: [invoiceId], references: [id])
+  purchaseItem   PurchaseItem @relation(fields: [purchaseItemId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id             String               @id @default(uuid())
+  name           String
+  type           PurchaseItemTypes
+  price          Float                @default(0.00)
+  notes          String?
+  categoryId     String
+  organizationId String
+  createdAt      DateTime             @default(now())
+  category       PurchaseItemCategory @relation(fields: [categoryId], references: [id])
+  organization   Organization         @relation(fields: [organizationId], references: [id])
+  purchases      Purchase[]
+  inventory      Inventory?
+
+  @@unique([organizationId, name])
+  @@map("purchase_items")
+}
+
+model Inventory {
+  id             String                   @id @default(uuid())
+  materialId     String                   @unique
+  quantity       Float                    @default(0.00)
+  organizationId String
+  material       PurchaseItem             @relation(fields: [materialId], references: [id])
+  organization   Organization             @relation(fields: [organizationId], references: [id])
+  products       ProductBillOfMaterials[]
+
+  @@map("inventory")
+}
+
+model PurchaseItemCategory {
+  id             String         @id @default(uuid())
+  name           String
+  createdAt      DateTime       @default(now())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  purchaseItems  PurchaseItem[]
+
+  @@unique([organizationId, name])
+  @@map("categories")
+}

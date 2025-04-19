@@ -1,21 +1,21 @@
 import express from 'express';
 import { checkSchema } from 'express-validator';
-import { authorizeUser } from '@middlewares/authorization.js';
-import { getOrgContext } from '@middlewares/orgContextProvider.js';
-import { organizationId } from '@schemas/common.js';
+import { authorizeUser } from '../middlewares/authorization.js';
 import {
   productUpdate,
   productCreate,
   productId
-} from '@schemas/product.js';
-import { validate } from '@middlewares/validation.js';
+} from '../schemas/product.js';
+import {
+  checkValidationResult
+} from '../middlewares/validation.js';
 import {
   deleteProduct,
   updateProduct,
   createProduct,
   getProduct,
   getAllProducts
-} from '@services/product.js';
+} from '../services/product.js';
 
 
 const router = express.Router();
@@ -23,50 +23,39 @@ const router = express.Router();
 router.get(
   '/',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
-  validate,
   getAllProducts
 );
 
 router.get(
   '/:productId',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(productId, ['params']),
-  validate,
+  checkValidationResult,
   getProduct
 );
 
 router.post(
   '/',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(productCreate, ['body']),
-  validate,
+  checkValidationResult,
   createProduct
 );
 
 router.patch(
   '/:productId',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(productId, ['params']),
   checkSchema(productUpdate, ['body']),
-  validate,
+  checkValidationResult,
   updateProduct
 );
 
 router.delete(
   '/:productId',
   authorizeUser,
-  getOrgContext,
-  checkSchema(organizationId, ['params']),
   checkSchema(productId, ['params']),
-  validate,
+  checkValidationResult,
   deleteProduct
 );
 

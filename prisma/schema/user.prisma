@@ -1,0 +1,53 @@
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  username      String         @unique
+  phone         String
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  organizations Organization[]
+
+  @@index([email, username])
+  @@map("users")
+}
+
+model Organization {
+  id                     String                   @id @default(uuid())
+  name                   String
+  phone                  String
+  userId                 String
+  user                   User                     @relation(fields: [userId], references: [id])
+  createdAt              DateTime                 @default(now())
+  sales                  Sale[]
+  productionOrders       ProductionOrder[]
+  customers              Customer[]
+  suppliers              Supplier[]
+  products               Product[]
+  staff                  Staff[]
+  productCategories      ProductCategory[]
+  productBillOfMaterials ProductBillOfMaterials[]
+  invoices               Invoice[]
+  purchases              Purchase[]
+  purchaseItems          PurchaseItem[]
+  purchaseItemCategories PurchaseItemCategory[]
+  inventory              Inventory[]
+
+  @@unique([userId, name])
+  @@map("organizations")
+}
+
+model Staff {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  username       String       @unique
+  password       String
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, email])
+  @@unique([organizationId, username])
+  @@map("staff")
+}

@@ -1,4 +1,4 @@
-import { errorLogger } from '@lib/logger.js';
+import { errorLogger } from '../lib/logger.js';
 
 
 function errorHandler(err, req, res, next) {

@@ -1,22 +1,30 @@
 import { PrismaClient } from '@prisma/client';
 import { matchedData } from 'express-validator';
-import { CustomError } from '@lib/CustomError.js';
+import { CustomError } from '../lib/CustomError.js';
 
 
 const prisma = new PrismaClient();
 
-async function getAllMaterials(req, res, next) {
-  const { organizationId } = matchedData(req);
+async function getAllPurchaseItems(req, res, next) {
+  const { organizationId, type } = matchedData(req);
 
   try {
-    const materials = await prisma.material.findMany({
-      where: { organizationId },
+    const purchaseItems = await prisma.purchaseItem.findMany({
+      where: {
+        type,
+        organizationId,
+      },
       select: {
         id: true,
         name: true,
+        type: true,
         price: true,
-        quantity: true,
         createdAt: true,
+        inventory: {
+          select: {
+            quantity: true,
+          },
+        },
         category: {
           select: {
             name: true,
@@ -28,28 +36,33 @@ async function getAllMaterials(req, res, next) {
       },
     });
 
-    return res.status(200).json(materials);
+    return res.status(200).json(purchaseItems);
   } catch (err) {
     return next(err);
   }
 }
 
-async function getMaterial(req, res, next) {
-  const { organizationId, materialId } = matchedData(req);
+async function getPurchaseItem(req, res, next) {
+  const { organizationId, purchaseItemId } = matchedData(req);
 
   try {
-    const material = await prisma.material.findUnique({
+    const purchaseItem = await prisma.purchaseItem.findUnique({
       where: {
         organizationId,
-        id: materialId,
+        id: purchaseItemId,
       },
       select: {
         id: true,
         name: true,
+        type: true,
         price: true,
-        quantity: true,
         notes: true,
         createdAt: true,
+        inventory: {
+          select: {
+            quantity: true,
+          },
+        },
         category: {
           select: {
             id: true,
@@ -58,21 +71,22 @@ async function getMaterial(req, res, next) {
         },
       },
     });
-    if (!material) {
+    if (!purchaseItem) {
       throw new CustomError({
         statusCode: 404
       });
     }
 
-    return res.status(200).json(material);
+    return res.status(200).json(purchaseItem);
   } catch (err) {
     return next(err);
   }
 }
 
-async function createMaterial(req, res, next) {
+async function createPurchaseItem(req, res, next) {
   const {
     name,
+    type,
     price,
     notes,
     categoryId,
@@ -80,9 +94,10 @@ async function createMaterial(req, res, next) {
   } = matchedData(req);
 
   try {
-    const material = await prisma.material.create({
+    const prismaPurchaseObj = {
       data: {
         name,
+        type,
         price,
         notes,
         category: {
@@ -99,15 +114,31 @@ async function createMaterial(req, res, next) {
       select: {
         id: true,
         name: true,
+        type: true,
         price: true,
-        quantity: true,
         notes: true,
         createdAt: true,
         categoryId: true,
       },
-    });
+    }
 
-    return res.status(201).json(material);
+    if (type === 'storable') {
+      prismaPurchaseObj.data.inventory = {
+        create: {
+          organization: {
+            connect: {
+              id: organizationId,
+            },
+          },
+        },
+      };
+    }
+    
+    const purchaseItem = await prisma.purchaseItem.create(
+      prismaPurchaseObj
+    );
+
+    return res.status(201).json(purchaseItem);
   } catch (err) {
     if (err.code === 'P2002') {
       return next(new CustomError({
@@ -115,13 +146,23 @@ async function createMaterial(req, res, next) {
         message: 'Name already taken'
       }));
     }
+
+    if (err.code === 'P2025') {
+      return next(
+        new CustomError({
+          statusCode: 404,
+          message: `${err.meta.cause.split("'")[1]} not found`
+        })
+      );
+    }
+
     return next(err);
   }
 }
 
-async function updateMaterial(req, res, next) {
+async function updatePurchaseItem(req, res, next) {
   const {
-    materialId,
+    purchaseItemId,
     name,
     price,
     notes,
@@ -130,10 +171,10 @@ async function updateMaterial(req, res, next) {
   } = matchedData(req);
 
   try {
-    const material = await prisma.material.update({
+    const purchaseItem = await prisma.purchaseItem.update({
       where: {
         organizationId,
-        id: materialId,
+        id: purchaseItemId,
       },
       data: {
         name,
@@ -148,15 +189,15 @@ async function updateMaterial(req, res, next) {
       select: {
         id: true,
         name: true,
+        type: true,
         price: true,
-        quantity: true,
         notes: true,
         createdAt: true,
         categoryId: true,
       },
     });
 
-    return res.status(200).json(material);
+    return res.status(200).json(purchaseItem);
   } catch (err) {
     if (err.code === 'P2002') {
       return next(new CustomError({
@@ -167,33 +208,34 @@ async function updateMaterial(req, res, next) {
     if (err.code === 'P2025') {
       return next(new CustomError({
         statusCode: 404,
+        message: JSON.stringify(err)//`${err.meta.cause.split("'")[1]} not found`
       }));
     }
     return next(err);
   }
 }
 
-async function deleteMaterial(req, res, next) {
-  const { organizationId, materialId } = matchedData(req);
+async function deletePurchaseItem(req, res, next) {
+  const { organizationId, purchaseItemId } = matchedData(req);
 
   try {
-    const material = await prisma.material.delete({
+    const purchaseItem = await prisma.purchaseItem.delete({
       where: {
         organizationId,
-        id: materialId,
+        id: purchaseItemId,
       },
       select: {
         id: true,
         name: true,
+        type: true,
         price: true,
-        quantity: true,
         notes: true,
         createdAt: true,
         categoryId: true,
       },
     });
 
-    return res.status(200).json(material);
+    return res.status(200).json(purchaseItem);
   } catch (err) {
     if (err.code === 'P2025') {
       return next(new CustomError({
@@ -206,9 +248,9 @@ async function deleteMaterial(req, res, next) {
 
 
 export {
-  getAllMaterials,
-  getMaterial,
-  createMaterial,
-  updateMaterial,
-  deleteMaterial,
+  getAllPurchaseItems,
+  getPurchaseItem,
+  createPurchaseItem,
+  updatePurchaseItem,
+  deletePurchaseItem,
 }
